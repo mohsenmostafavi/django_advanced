@@ -5,7 +5,6 @@ Learning Django advanced topics:
 - [ ] Authentication API with Token/JWT
 - [ ] Creating Tests
 - [ ] API Documentation
-- [ ] Dockerizing the Project
 - [ ] Deployment Using Docker
 - [ ] Caching and Celery
 - [ ] API Load Testing
