@@ -1,5 +1,7 @@
+from dataclasses import field
+
 from rest_framework import serializers
-from blog.models import Post
+from blog.models import Category, Post
 
 
 # class PostSerializer(serializers.Serializer):
@@ -18,4 +20,13 @@ class PostSerializer(serializers.ModelSerializer):
             "category",
             "status",
             "published_date",
+        ]
+
+
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = [
+            "id",
+            "name",
         ]

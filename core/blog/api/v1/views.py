@@ -10,9 +10,9 @@ from rest_framework.generics import (
     RetrieveUpdateDestroyAPIView,
 )
 from rest_framework import mixins, viewsets
-from .serializers import PostSerializer
+from .serializers import PostSerializer, CategorySerializer
 from rest_framework import status
-from blog.models import Post
+from blog.models import Post, Category
 
 # Example Of DRF Function Base Views
 """
@@ -116,7 +116,8 @@ class PostDetail(RetrieveUpdateDestroyAPIView):
 
 """
 
-
+# Example Of DRF ViewSet
+"""
 class PostViewSet(viewsets.ViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
     serializer_class = PostSerializer
@@ -150,3 +151,16 @@ class PostViewSet(viewsets.ViewSet):
         return Response(
             {"detail": "item remove successfully"}, status=status.HTTP_204_NO_CONTENT
         )
+"""
+
+
+class PostModelViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    serializer_class = PostSerializer
+    queryset = Post.objects.filter(status=True)
+
+
+class CategoryModelViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    serializer_class = CategorySerializer
+    queryset = Category.objects.all()
