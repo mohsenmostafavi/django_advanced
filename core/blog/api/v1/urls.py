@@ -1,7 +1,14 @@
 from django.urls import path, include
 from . import views
+from rest_framework.routers import DefaultRouter
 
 app_name = "api_v1"
+
+router = DefaultRouter()
+router.register("post", views.PostViewSet, basename="post")
+urlpatterns = router.urls
+
+"""
 urlpatterns = [
     path(
         "post/",
@@ -16,3 +23,4 @@ urlpatterns = [
         name="post_update",
     ),
 ]
+"""
