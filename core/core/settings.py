@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "rest_framework",
     "accounts.apps.AccountsConfig",
     "blog.apps.BlogConfig",
 ]
@@ -86,7 +87,7 @@ WSGI_APPLICATION = "core.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / config("SQLITE_DB_NAME", default="db.sqlite3"),
+        "NAME": config("SQLITE_DB_NAME", default=str(BASE_DIR / "db.sqlite3")),
     }
 }
 
@@ -123,6 +124,17 @@ USE_TZ = True
 
 # User Manager Config
 AUTH_USER_MODEL = "accounts.User"
+
+# Django Rest Framework Settings
+# REST_FRAMEWORK = {
+#     "DEFAULT_AUTHENTICATION_CLASSES": [
+#         "rest_framework.authentication.SessionAuthentication",
+#     ],
+#     "DEFAULT_PERMISSION_CLASSES": [
+#         "rest_framework.permissions.IsAuthenticatedOrReadOnly",
+#     ],
+# }
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/

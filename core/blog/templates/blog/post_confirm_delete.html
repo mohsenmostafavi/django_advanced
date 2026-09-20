@@ -1,0 +1,15 @@
+<h1>حذف نویسنده</h1>
+
+<p>
+    آیا مطمئن هستید که می‌خواهید نویسندهٔ
+    "{{ object.name }}"
+    را حذف کنید؟
+</p>
+
+<form method="post">
+    {% csrf_token %}
+
+    <button type="submit">
+        بله، حذف کن
+    </button>
+</form>
