@@ -9,7 +9,7 @@ from rest_framework.generics import (
     ListAPIView,
     RetrieveUpdateDestroyAPIView,
 )
-from rest_framework import mixins
+from rest_framework import mixins, viewsets
 from .serializers import PostSerializer
 from rest_framework import status
 from blog.models import Post
@@ -116,3 +116,37 @@ class PostDetail(RetrieveUpdateDestroyAPIView):
 
 """
 
+
+class PostViewSet(viewsets.ViewSet):
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    serializer_class = PostSerializer
+    queryset = Post.objects.filter(status=True)
+
+    def list(self, request):
+        serializer = self.serializer_class(self.queryset, many=True)
+        return Response(serializer.data)
+
+    def reterive(self, request, pk=None):
+        post_object = get_object_or_404(Post, pk=pk)
+        serializer = self.serializer_class(post_object)
+        return Response(serializer.data)
+
+    def create(self, request):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+
+    def update(self, request, pk=None):
+        post_object = get_object_or_404(Post, pk=pk)
+        serializer = self.serializer_class(post_object, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+
+    def destroy(self, request, pk=None):
+        post = get_object_or_404(Post, pk=pk, status=True)
+        post.delete()
+        return Response(
+            {"detail": "item remove successfully"}, status=status.HTTP_204_NO_CONTENT
+        )

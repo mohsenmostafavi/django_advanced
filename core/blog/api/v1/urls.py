@@ -3,7 +3,16 @@ from . import views
 
 app_name = "api_v1"
 urlpatterns = [
-    # path("post/", views.postList, name="post_list"),
-    path("post/", views.PostList.as_view(), name="post_list"),
-    path("post/<int:pk>/", views.PostDetail.as_view(), name="post_detail"),
+    path(
+        "post/",
+        views.PostViewSet.as_view({"get": "list", "post": "create"}),
+        name="post_list",
+    ),
+    path(
+        "post/<int:pk>",
+        views.PostViewSet.as_view(
+            {"get": "reterive", "put": "update", "delete": "destroy"}
+        ),
+        name="post_update",
+    ),
 ]
