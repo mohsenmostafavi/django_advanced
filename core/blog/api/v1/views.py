@@ -10,7 +10,12 @@ from rest_framework.generics import (
     RetrieveUpdateDestroyAPIView,
 )
 from rest_framework import mixins, viewsets
-from .serializers import PostSerializer, CategorySerializer
+from .serializers import (
+    PostSerializer,
+    CategorySerializer,
+    PostDetailSerializer,
+    PostListSerializer,
+)
 from rest_framework import status
 from blog.models import Post, Category
 
@@ -156,8 +161,17 @@ class PostViewSet(viewsets.ViewSet):
 
 class PostModelViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
-    serializer_class = PostSerializer
     queryset = Post.objects.filter(status=True)
+
+    # serializer_class = PostSerializer
+    def get_serializer_class(self):
+        if self.action == "list":
+            return PostListSerializer
+
+        if self.action == "retrieve":
+            return PostDetailSerializer
+
+        return PostSerializer
 
 
 """    

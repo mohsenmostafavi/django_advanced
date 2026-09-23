@@ -3,16 +3,21 @@ from dataclasses import field
 from rest_framework import serializers
 from blog.models import Category, Post
 
+# Example of Serializer fields
+"""class PostSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    title = serializers.CharField(max_length=250)"""
 
-# class PostSerializer(serializers.Serializer):
-#     id = serializers.IntegerField()
-#     title = serializers.CharField(max_length=250)
 
-
+# Example of Serializer fields
+"""
 class PostSerializer(serializers.ModelSerializer):
     snippet = serializers.ReadOnlyField(source="get_snippet")
     relative_url = serializers.URLField(source="get_absolute_url", read_only=True)
     absolute_url = serializers.SerializerMethodField()
+    category = serializers.SlugRelatedField(
+        many=False, slug_field="name", queryset=Category.objects.all()
+    )
 
     class Meta:
         model = Post
@@ -22,6 +27,7 @@ class PostSerializer(serializers.ModelSerializer):
             "title",
             "content",
             "category",
+            "image",
             "status",
             "snippet",
             "relative_url",
@@ -34,7 +40,42 @@ class PostSerializer(serializers.ModelSerializer):
 
     def get_absolute_url(self, obj):
         request = self.context.get("request")
-        return request.build_absolute_uri(obj.pk)
+        return request.build_absolute_uri(obj.get_absolute_url())
+
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+
+        view = self.context.get("view")
+        action = getattr(view, "action", None)
+
+        if action == "retrieve":
+            # فیلدهای غیرضروری در post-detail
+            rep.pop("snippet", None)
+            rep.pop("relative_url", None)
+            rep.pop("absolute_url", None)
+
+        elif action == "list":
+            # در post-list فقط relative_url حذف شود
+            rep.pop("relative_url", None)
+
+        rep["category"] = CategorySerializer(instance.category).data
+
+        return rep
+
+
+    def to_representation(self, instance):
+        request = self.context.get("request")
+        rep = super().to_representation(instance)
+
+        if request.parser_context.get("kwargs").get("pk"):
+            rep.pop("snippet", None)
+            rep.pop("relative_url", None)
+            rep.pop("absolute_url", None)
+        else:
+            rep.pop("relative_url", None)
+        rep["category"] = CategorySerializer(instance.category).data
+        return rep
+"""
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -43,4 +84,57 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "name",
+        ]
+
+
+class PostDetailSerializer(serializers.ModelSerializer):
+    """Special serializer for post-detail end-point"""
+
+    snippet = serializers.ReadOnlyField(source="get_snippet")
+    relative_url = serializers.URLField(source="get_absolute_url", read_only=True)
+    absolute_url = serializers.SerializerMethodField()
+
+    category = CategorySerializer(read_only=True)
+
+    class Meta:
+        model = Post
+        fields = [
+            "id",
+            "author",
+            "title",
+            "content",
+            "category",
+            "image",
+            "status",
+            "snippet",
+            "relative_url",
+            "absolute_url",
+            "published_date",
+        ]
+        read_only_fields = [
+            "author",
+        ]
+
+    def get_absolute_url(self, obj):
+        request = self.context.get("request")
+
+        if request:
+            return request.build_absolute_uri(obj.get_absolute_url())
+        return obj.get_absolute_url()
+
+
+class PostListSerializer(serializers.ModelSerializer):
+    """Special serializer for post-list end-point"""
+
+    category = CategorySerializer(read_only=True)
+
+    class Meta:
+        model = Post
+        fields = [
+            "id",
+            "title",
+            "category",
+            "image",
+            "status",
+            "published_date",
         ]
