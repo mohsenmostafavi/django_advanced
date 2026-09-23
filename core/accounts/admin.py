@@ -13,7 +13,7 @@ class CustomUserAdmin(UserAdmin):
     ordering = ["email"]
     fieldsets = (
         (
-            "Authenticatio",
+            "Authentication",
             {
                 "fields": (
                     "email",

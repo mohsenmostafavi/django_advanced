@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.db import models
 from accounts.models import Profile
+from django.urls import reverse
 
 # getting user model object
 User = get_user_model()
@@ -24,6 +25,12 @@ class Post(models.Model):
 
     def __str__(self):
         return f"{self.title}: {self.content[:15]}"
+
+    def get_snippet(self):
+        return self.content[:5]
+
+    def get_absolute_url(self):
+        return reverse("blog:api/v1:post-detail", kwargs={"pk": self.pk})
 
 
 class Category(models.Model):

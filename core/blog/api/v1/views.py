@@ -160,6 +160,15 @@ class PostModelViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.filter(status=True)
 
 
+"""    
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user.profile)
+
+    def perform_update(self, serializer):
+        serializer.save(author=self.request.user.profile)
+"""
+
+
 class CategoryModelViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly]
     serializer_class = CategorySerializer
