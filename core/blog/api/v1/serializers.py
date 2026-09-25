@@ -1,5 +1,3 @@
-from dataclasses import field
-
 from rest_framework import serializers
 from blog.models import Category, Post
 
@@ -9,8 +7,15 @@ from blog.models import Category, Post
     title = serializers.CharField(max_length=250)"""
 
 
-# Example of Serializer fields
-"""
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = [
+            "id",
+            "name",
+        ]
+
+
 class PostSerializer(serializers.ModelSerializer):
     snippet = serializers.ReadOnlyField(source="get_snippet")
     relative_url = serializers.URLField(source="get_absolute_url", read_only=True)
@@ -45,6 +50,7 @@ class PostSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         rep = super().to_representation(instance)
 
+        request = self.context.get("request")
         view = self.context.get("view")
         action = getattr(view, "action", None)
 
@@ -58,12 +64,26 @@ class PostSerializer(serializers.ModelSerializer):
             # در post-list فقط relative_url حذف شود
             rep.pop("relative_url", None)
 
-        rep["category"] = CategorySerializer(instance.category).data
+        rep["category"] = CategorySerializer(
+            instance.category, context={"request": request}
+        ).data
 
         return rep
 
 
-    def to_representation(self, instance):
+""" def create(self, validated_data):
+        '''get author field value from current user'''
+
+        request = self.context.get("request")
+
+        if request is None or not request.user.is_authenticated:
+            raise serializers.ValidationError("کاربر احراز هویت‌شده یافت نشد.")
+
+        validated_data["author"] = request.user.profile
+        return Post.objects.create(**validated_data)"""
+
+
+""" def to_representation(self, instance):
         request = self.context.get("request")
         rep = super().to_representation(instance)
 
@@ -74,20 +94,10 @@ class PostSerializer(serializers.ModelSerializer):
         else:
             rep.pop("relative_url", None)
         rep["category"] = CategorySerializer(instance.category).data
-        return rep
-"""
+        return rep"""
 
 
-class CategorySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Category
-        fields = [
-            "id",
-            "name",
-        ]
-
-
-class PostDetailSerializer(serializers.ModelSerializer):
+'''class PostDetailSerializer(serializers.ModelSerializer):
     """Special serializer for post-detail end-point"""
 
     snippet = serializers.ReadOnlyField(source="get_snippet")
@@ -137,4 +147,4 @@ class PostListSerializer(serializers.ModelSerializer):
             "image",
             "status",
             "published_date",
-        ]
+        ]'''

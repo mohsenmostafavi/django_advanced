@@ -13,10 +13,11 @@ from rest_framework import mixins, viewsets
 from .serializers import (
     PostSerializer,
     CategorySerializer,
-    PostDetailSerializer,
-    PostListSerializer,
+    #    PostDetailSerializer,
+    #   PostListSerializer,
 )
 from rest_framework import status
+from .permissions import IsAuthorOrReadOnly
 from blog.models import Post, Category
 
 # Example Of DRF Function Base Views
@@ -160,23 +161,26 @@ class PostViewSet(viewsets.ViewSet):
 
 
 class PostModelViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly]
     queryset = Post.objects.filter(status=True)
 
-    # serializer_class = PostSerializer
-    def get_serializer_class(self):
+    serializer_class = PostSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user.profile)
+
+
+"""    def get_serializer_class(self):
         if self.action == "list":
             return PostListSerializer
 
         if self.action == "retrieve":
             return PostDetailSerializer
 
-        return PostSerializer
+        return PostSerializer"""
 
 
 """    
-    def perform_create(self, serializer):
-        serializer.save(author=self.request.user.profile)
 
     def perform_update(self, serializer):
         serializer.save(author=self.request.user.profile)
