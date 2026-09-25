@@ -18,7 +18,7 @@ from .serializers import (
 )
 from rest_framework import status
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.filters import SearchFilter
+from rest_framework.filters import SearchFilter, OrderingFilter
 from .permissions import IsAuthorOrReadOnly
 from blog.models import Post, Category
 
@@ -165,9 +165,10 @@ class PostViewSet(viewsets.ViewSet):
 class PostModelViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly]
     queryset = Post.objects.filter(status=True)
-    filter_backends = [DjangoFilterBackend, SearchFilter]
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_fields = ["category", "author"]
     search_fields = ["title", "content"]
+    ordering_fields = ["published_date"]
 
     serializer_class = PostSerializer
 
