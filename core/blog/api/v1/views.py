@@ -20,7 +20,9 @@ from rest_framework import status
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
 from .permissions import IsAuthorOrReadOnly
+from .paginations import DefualtPagination
 from blog.models import Post, Category
+
 
 # Example Of DRF Function Base Views
 """
@@ -171,6 +173,7 @@ class PostModelViewSet(viewsets.ModelViewSet):
     ordering_fields = ["published_date"]
 
     serializer_class = PostSerializer
+    pagination_class = DefualtPagination
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user.profile)
