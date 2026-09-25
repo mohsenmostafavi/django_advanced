@@ -17,6 +17,7 @@ from .serializers import (
     #   PostListSerializer,
 )
 from rest_framework import status
+from django_filters.rest_framework import DjangoFilterBackend
 from .permissions import IsAuthorOrReadOnly
 from blog.models import Post, Category
 
@@ -163,6 +164,8 @@ class PostViewSet(viewsets.ViewSet):
 class PostModelViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly]
     queryset = Post.objects.filter(status=True)
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ["category", "author"]
 
     serializer_class = PostSerializer
 
