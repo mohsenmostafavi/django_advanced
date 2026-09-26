@@ -168,7 +168,7 @@ class PostModelViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly]
     queryset = Post.objects.filter(status=True)
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    filterset_fields = ["category", "author"]
+    filterset_fields = {"category": ["exact"], "author": ["exact", "in"]}
     search_fields = ["title", "content"]
     ordering_fields = ["published_date"]
 
@@ -176,7 +176,7 @@ class PostModelViewSet(viewsets.ModelViewSet):
     pagination_class = DefualtPagination
 
     def perform_create(self, serializer):
-        serializer.save(author=self.request.user.profile)
+        serializer.save(author=self.request.user.profile.user)
 
 
 """    def get_serializer_class(self):
