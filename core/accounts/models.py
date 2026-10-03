@@ -1,10 +1,10 @@
-from tkinter import CASCADE
-
+from django.conf import settings
 from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
     PermissionsMixin,
 )
+from rest_framework.authtoken.models import Token
 from django.db import models
 from django.dispatch import receiver
 from django.db.models.signals import post_save
@@ -77,3 +77,9 @@ class Profile(models.Model):
 def save_profile(sender, instance, created, **kwargs):
     if created:
         Profile.objects.create(user=instance)
+
+
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+def create_auth_token(sender, instance, created, **kwargs):
+    if created:
+        Token.objects.create(user=instance)

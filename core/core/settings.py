@@ -47,6 +47,8 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
+    "rest_framework_simplejwt",
+    "rest_framework.authtoken",
     "accounts.apps.AccountsConfig",
     "blog.apps.BlogConfig",
     "django_filters",
@@ -128,15 +130,17 @@ USE_TZ = True
 AUTH_USER_MODEL = "accounts.User"
 
 # Django Rest Framework Settings
-# REST_FRAMEWORK = {
-#     "DEFAULT_AUTHENTICATION_CLASSES": [
-#         "rest_framework.authentication.SessionAuthentication",
-#     ],
-#     "DEFAULT_PERMISSION_CLASSES": [
-#         "rest_framework.permissions.IsAuthenticatedOrReadOnly",
-#     ],
-# }
-
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.BasicAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
+        "rest_framework.authentication.TokenAuthentication",
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.AllowAny",
+    ],
+}
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/

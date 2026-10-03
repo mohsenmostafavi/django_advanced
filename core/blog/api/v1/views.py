@@ -1,5 +1,5 @@
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from django.shortcuts import get_object_or_404, get_list_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -165,7 +165,7 @@ class PostViewSet(viewsets.ViewSet):
 
 
 class PostModelViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly]
+    permission_classes = [IsAuthenticated, IsAuthorOrReadOnly]
     queryset = Post.objects.filter(status=True)
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_fields = {"category": ["exact"], "author": ["exact", "in"]}
@@ -189,9 +189,7 @@ class PostModelViewSet(viewsets.ModelViewSet):
         return PostSerializer"""
 
 
-"""    
-
-    def perform_update(self, serializer):
+""" def perform_update(self, serializer):
         serializer.save(author=self.request.user.profile)
 """
 
