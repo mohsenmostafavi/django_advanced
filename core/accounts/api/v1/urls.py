@@ -17,6 +17,7 @@ urlpatterns = [
     path("token/login/", views.CustomObtainAuthToken.as_view(), name="token_login"),
     path("token/logout/", views.CustomDiscardAuthToken.as_view(), name="token_logout"),
     # change password
+    path("change-password", views.ChangePasswordApiView.as_view(), name="change_pass"),
     # reset password
     # login session
     path("jwt/create/", views.CustomTokenObtainPairView.as_view(), name="jwt_create"),
