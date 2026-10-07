@@ -1,7 +1,11 @@
 import email
 from typing import Any
+from xml.dom import ValidationErr
 
-from django.contrib.auth.password_validation import validate_password
+from django.contrib.auth.password_validation import (
+    password_changed,
+    validate_password,
+)
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth import authenticate
@@ -86,4 +90,41 @@ class ChangePasswordSerializer(serializers.Serializer):
             validate_password(attrs.get("new_password"))
         except exceptions.ValidationError as errors:
             raise serializers.ValidationError({"new_password": list(errors.messages)})
+        return super().validate(attrs)
+
+class CustomChangePasswordSerializer(serializers.Serializer):
+    
+    current_password = serializers.CharField(
+        required=True,
+        write_only=True,
+        trim_whitespace=False
+    )
+    new_password = serializers.CharField(
+        required=True,
+        write_only=True,
+        trim_whitespace=False
+    )
+    confirm_new_password = serializers.CharField(
+        required=True,
+        write_only=True,
+        trim_whitespace=False
+    )
+
+    def validate(self, attrs):
+        user = self.context['request'].user
+
+        if not user.check_password(attrs['current_password']):
+            raise serializers.ValidationError('password wrong')
+
+        if attrs['new_password'] != attrs['confirm_new_password']:
+            raise serializers.ValidationError('password not match')
+
+        if attrs['current_password'] == attrs['new_password']:
+            raise serializers.ValidationError('new password should be diffrent from current password')
+
+        try:
+            validate_password(attrs.get("new_password"))
+        except exceptions.ValidationError as errors:
+            raise serializers.ValidationError({"new_password": list(errors.messages)})
+        
         return super().validate(attrs)

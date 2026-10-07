@@ -1,11 +1,15 @@
+import stat
+
 from rest_framework import generics
 from rest_framework import status
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .serializers import (
     ChangePasswordSerializer,
     RegisterationSerializer,
     CustomAuthTokenSerializer,
     CustomTokenObtainPairSerializer,
+    CustomChangePasswordSerializer,
 )
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
@@ -84,3 +88,20 @@ class ChangePasswordApiView(generics.GenericAPIView):
                 {"detail": "password change successfully"}, status=status.HTTP_200_OK
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class CustomChangePasswordApiView(generics.GenericAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = CustomChangePasswordSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        user = request.user
+        user.set_password(serializer.validated_data["new_password"])
+        user.save(update_fields=["password"])
+
+        return Response(
+            {"detail": "Password Change Successfully"}, status=status.HTTP_200_OK
+        )

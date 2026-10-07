@@ -168,7 +168,10 @@ class PostModelViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, IsAuthorOrReadOnly]
     queryset = Post.objects.filter(status=True)
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    filterset_fields = {"category": ["exact"], "author": ["exact", "in"]}
+    filterset_fields = {
+        "category": ["exact"],
+        "author": ["exact", "in"]
+        }
     search_fields = ["title", "content"]
     ordering_fields = ["published_date"]
 
